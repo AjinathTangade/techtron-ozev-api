@@ -3,7 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const installerRoutes = require('./routes/installerRoutes');
-
+const adminRoutes = require('./routes/adminRoutes');
 const app = express();
 
 app.use(cors({
@@ -13,7 +13,7 @@ app.use(cors({
 app.use(express.json());
 
 app.use('/api/installers', installerRoutes);
-
+app.use('/api/admin', adminRoutes);
 app.get('/', (req, res) => {
   res.send('OZEV API Running');
 });
