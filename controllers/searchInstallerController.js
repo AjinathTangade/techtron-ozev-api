@@ -4,9 +4,23 @@ const searchInstallers = async (req, res) => {
 
   try {
 
-    const snapshot = await db
-      .collection('installers')
-      .get();
+    const { city, postcode } = req.query;
+
+    let query = db.collection('installers');
+
+    if(city) {
+
+      query = query.where('city', '==', city);
+
+    }
+
+    if(postcode) {
+
+      query = query.where('postcode', '==', postcode);
+
+    }
+
+    const snapshot = await query.get();
 
     let installers = [];
 
