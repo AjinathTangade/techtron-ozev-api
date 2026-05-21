@@ -4,32 +4,41 @@ const searchInstallers = async (req, res) => {
 
   try {
 
-    const { city, postcode } = req.query;
+    const { query } = req.query;
 
-    let query = db.collection('installers');
-
-    if(city) {
-
-      query = query.where('city', '==', city);
-
-    }
-
-    if(postcode) {
-
-      query = query.where('postcode', '==', postcode);
-
-    }
-
-    const snapshot = await query.get();
+    // Get approved installers only
+    const snapshot = await db
+      .collection('installers')
+      .where('status', '==', 'approved')
+      .get();
 
     let installers = [];
 
     snapshot.forEach(doc => {
 
-      installers.push({
-        id: doc.id,
-        ...doc.data()
-      });
+      const data = doc.data();
+
+      const city =
+        (data.city || '').toLowerCase();
+
+      const postcode =
+        (data.postcode || '').toLowerCase();
+
+      const search =
+        (query || '').toLowerCase();
+
+      // Partial match support
+      if(
+        city.includes(search) ||
+        postcode.includes(search)
+      ) {
+
+        installers.push({
+          id: doc.id,
+          ...data
+        });
+
+      }
 
     });
 
