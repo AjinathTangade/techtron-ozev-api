@@ -6,7 +6,15 @@ const searchInstallers = async (req, res) => {
 
     const { query } = req.query;
 
-    // Get approved installers only
+    // BLOCK EMPTY SEARCH
+    if(!query || query.trim() === '') {
+
+      return res.status(400).json({
+        error: 'Please enter city or postcode'
+      });
+
+    }
+
     const snapshot = await db
       .collection('installers')
       .where('status', '==', 'approved')
@@ -25,9 +33,9 @@ const searchInstallers = async (req, res) => {
         (data.postcode || '').toLowerCase();
 
       const search =
-        (query || '').toLowerCase();
+        query.toLowerCase().trim();
 
-      // Partial match support
+      // Partial matching
       if(
         city.includes(search) ||
         postcode.includes(search)
